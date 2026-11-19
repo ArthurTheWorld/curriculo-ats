@@ -6,9 +6,9 @@ from curriculo_ats.resposta import RespostaInvalida, ler_resposta
 
 
 def test_prompt_tem_regras_curriculo_vaga_e_formato():
-    p = montar_prompt({"contato": "Ana", "experiencia": "Empresa X"}, "Vaga de dados", "en", ["dbt"])
+    p = montar_prompt({"contato": "Ana", "experiencia": "Empresa X"}, "Vaga de dados", "pt", ["dbt"])
     assert "Ana" in p and "Empresa X" in p and "Vaga de dados" in p
-    assert "Não invente" in p and "English" in p and "dbt" in p
+    assert "Não invente" in p and "dbt" in p
     assert "=== EXPERIENCIA ===" in p
 
 

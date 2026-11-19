@@ -235,3 +235,27 @@ def priorizar_habilidades(habilidades: str, encontradas: list[str], termos: list
         return habilidades
     itens = [i for i in _SEPARADORES.split(linhas[0].strip()) if i]
     return ", ".join(sorted(itens, key=posicao))
+
+
+_COM_MARCADOR = re.compile(r"^(\s*[-*•]\s*)")
+
+
+def acrescentar_habilidades(habilidades: str, novas: list[str]) -> str:
+    """Acrescenta habilidades que a PRÓPRIA PESSOA marcou como "eu tenho isso".
+
+    Segue o formato que já existe (lista com marcador ou linha separada por vírgulas) e
+    não repete o que já está escrito.
+    """
+    novas = [n for n in novas if not contem(habilidades, n)]
+    if not novas:
+        return habilidades
+    texto = habilidades.rstrip()
+    linhas = [linha for linha in texto.splitlines() if linha.strip()]
+    if not linhas:
+        return ", ".join(novas)
+    marcador = _COM_MARCADOR.match(linhas[-1])
+    if len(linhas) > 1 and marcador:
+        return texto + "".join(f"\n{marcador.group(1)}{n}" for n in novas)
+    if len(linhas) > 1:
+        return texto + "\n" + ", ".join(novas)
+    return texto + ", " + ", ".join(novas)

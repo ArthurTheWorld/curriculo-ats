@@ -12,7 +12,7 @@ from curriculo_ats.exportar import gerar_docx, gerar_pdf, nome_arquivo
 from curriculo_ats.idioma import detectar_idioma
 from curriculo_ats.leitura import extrair_texto
 from curriculo_ats.modelos import ORDEM, Secoes, somente_contato
-from curriculo_ats.palavras_chave import analisar, carregar_termos, priorizar_habilidades
+from curriculo_ats.palavras_chave import acrescentar_habilidades, analisar, carregar_termos, priorizar_habilidades
 from curriculo_ats.prompt import montar_prompt
 from curriculo_ats.resposta import RespostaInvalida, ler_resposta
 
@@ -103,15 +103,29 @@ if not st.session_state.get("carregado") or not vaga:
     st.stop()
 
 secoes = secoes_da_tela()
-curriculo = como_texto(secoes)
 idioma_vaga = detectar_idioma(vaga)
+empresa = st.session_state.get("empresa", "")
 
 # --- 3. Compatibilidade ---------------------------------------------------------
 st.header("3. Compatibilidade", divider="gray")
-analise = analise_em_cache(curriculo, vaga, st.session_state.get("empresa", ""))
-mostrar_analise(analise, "Compatibilidade com a vaga")
-st.caption("As palavras não encontradas são para você conferir se tem e esqueceu de citar. "
-           "Não acrescente o que você não tem.")
+base = analise_em_cache(como_texto(secoes), vaga, empresa)
+
+# "Eu tenho isso": a própria pessoa declara o que tem e esqueceu de citar. Só isso é
+# acrescentado ao currículo; o app nunca acrescenta nada por conta própria.
+if "tenho" in st.session_state:
+    st.session_state["tenho"] = [t for t in st.session_state["tenho"] or [] if t in base.faltando]
+tenho = st.session_state.get("tenho") or []
+if tenho:
+    secoes = secoes | {"habilidades": acrescentar_habilidades(secoes["habilidades"], tenho)}
+curriculo = como_texto(secoes)
+analise = analise_em_cache(curriculo, vaga, empresa) if tenho else base
+
+mostrar_analise(analise, "Compatibilidade com a vaga", base.nota if tenho else None)
+if base.faltando:
+    st.pills("Você tem alguma destas e esqueceu de citar? Marque e ela entra nas suas habilidades.",
+             base.faltando, selection_mode="multi", key="tenho")
+st.caption("A nota só sobe com o que você realmente tem. Marque só o que você sabe fazer: "
+           "na entrevista, vão perguntar.")
 
 # --- 4. Caminho -----------------------------------------------------------------
 st.header("4. Escolha o caminho", divider="gray")
@@ -125,11 +139,12 @@ if modo == "sem_ia":
                 "para isso, use o caminho com IA.", icon=":material/translate:")
     final = secoes | {"habilidades": priorizar_habilidades(secoes["habilidades"], analise.encontradas, termos())}
     st.caption("O currículo é reorganizado no formato ATS, e as habilidades que a vaga pede vão para o começo "
-               "da lista. Nada é acrescentado.")
+               "da lista. Nada é acrescentado além do que você marcou na etapa 3.")
 else:
     idioma = idioma_vaga
     st.markdown("**a.** Copie o prompt abaixo (botão no canto do quadro).")
-    st.code(montar_prompt(secoes, vaga, idioma_vaga, analise.faltando), language=None, wrap_lines=True)
+    st.code(montar_prompt(secoes, vaga, idioma_vaga, analise.faltando, analise.encontradas),
+            language=None, wrap_lines=True)
     st.markdown("**b.** Cole em um chat de IA gratuito:")
     with st.container(horizontal=True):
         for nome, url in CHATS.items():
@@ -175,12 +190,15 @@ else:
     else:
         st.success("Nenhum número, tecnologia ou contato novo em relação ao seu currículo.",
                    icon=":material/verified:")
-    depois = analise_em_cache(como_texto(final), vaga, st.session_state.get("empresa", ""))
+    depois = analise_em_cache(como_texto(final), vaga, empresa)
     mostrar_analise(depois, "Compatibilidade depois da IA", analise.nota)
+    if depois.nota <= analise.nota:
+        st.info("A nota não subiu porque a IA não pode acrescentar o que você não tem. Ela melhora o texto; "
+                "para a nota subir, marque na etapa 3 as palavras que você tem e esqueceu de citar.",
+                icon=":material/info:")
 
 # --- 5. Baixar -----------------------------------------------------------------
 st.header("5. Baixar", divider="gray")
-empresa = st.session_state.get("empresa", "")
 with st.container(horizontal=True):
     st.download_button("Baixar .docx", gerar_docx(final, idioma), file_name=nome_arquivo(final, empresa, "docx"),
                        mime="application/vnd.openxmlformats-officedocument.wordprocessingml.document",

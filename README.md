@@ -2,7 +2,7 @@
 
 Adapte o seu currículo a uma vaga e gere uma versão que os sistemas de seleção automática (ATS) conseguem ler. É gratuito, roda no seu computador e não precisa de cadastro nem de chave de API.
 
-![Tela do Currículo ATS com a nota de compatibilidade](docs/imagens/compatibilidade.jpg)
+![Tela do Currículo ATS com a nota de compatibilidade e as palavras para marcar](docs/imagens/compatibilidade.jpg)
 
 **Com ele você:**
 
@@ -109,7 +109,9 @@ A página tem cinco etapas, de cima para baixo. Quer só experimentar? Clique em
 - as palavras **encontradas**;
 - as palavras **pedidas na vaga e não encontradas**.
 
-Use a lista de não encontradas como checklist: você tem aquela habilidade e esqueceu de citar? Volte na etapa 1 e acrescente. Não tem? Deixe de fora.
+Logo abaixo, cada palavra não encontrada vira um botão. **Você tem aquela habilidade e esqueceu de citar? Clique nela.** Ela entra nas suas habilidades e a nota sobe na hora, sem IA nenhuma. Não tem? Deixe sem marcar.
+
+> **A nota só sobe com o que você realmente tem.** O app nunca acrescenta nada por conta própria: só o que você marcar. Marque só o que você sabe fazer, porque a entrevista vai perguntar.
 
 **4. Escolha o caminho.**
 
@@ -137,6 +139,13 @@ Este caminho usa um chat de IA gratuito que você já conhece para melhorar a es
 ![O aviso de conferência depois de colar a resposta da IA](docs/imagens/conferencia.jpg)
 
 O prompt já pede para a IA não inventar nada, mas IAs às vezes inventam mesmo assim. Por isso a conferência existe. **Leia o currículo final antes de enviar.**
+
+**Sobre o prompt:**
+
+- Ele sai **inteiro no idioma da vaga**. Para uma vaga em inglês, instruções, marcadores e currículo vêm em inglês, e a IA traduz o seu currículo sem mudar o sentido. Misturar idiomas confunde as IAs mais simples.
+- Ele lista as palavras-chave da vaga que você já tem e pede que a IA as escreva **exatamente como a vaga escreve** (por exemplo, "Pipelines de dados" em vez de "fluxos de dados"). É assim que uma reescrita honesta ganha pontos.
+
+**A nota não subiu depois da IA?** É esperado quando faltam habilidades que você não tem: a IA melhora o texto, mas não pode acrescentar experiência. Para a nota subir, marque na etapa 3 o que você tem e esqueceu de citar. O resultado também varia de uma IA para outra; se a resposta vier estranha, tente outro chat.
 
 ---
 
@@ -170,13 +179,13 @@ O PDF provavelmente é uma imagem escaneada. Abra o currículo no Word ou no Goo
 Abra o navegador e digite `http://localhost:8501`.
 
 **A nota está baixa. Devo colocar todas as palavras que faltam?**
-Não. A nota é um guia, não uma meta. Acrescente só o que você realmente sabe fazer. Um currículo honesto com 60% passa melhor por uma entrevista do que um inflado com 100%.
+Não. A nota é um guia, não uma meta. Marque na etapa 3 só o que você realmente sabe fazer. Um currículo honesto com 60% passa melhor por uma entrevista do que um inflado com 100%.
 
 **As seções foram separadas errado.**
 Abra "Confira as seções que reconheci" na etapa 1 e mova o texto para o campo certo. O currículo final usa o que estiver nesses campos.
 
 **O currículo está em português e a vaga em inglês.**
-No caminho sem IA o texto não é traduzido. Use o caminho com IA: o prompt pede o currículo no idioma da vaga.
+No caminho sem IA o texto não é traduzido. Use o caminho com IA: o prompt inteiro sai no idioma da vaga e pede a tradução do currículo.
 
 ---
 
