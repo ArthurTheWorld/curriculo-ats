@@ -1,0 +1,21 @@
+Engenheira(o) de Dados Pleno - Empresa Exemplo (vaga fictícia)
+
+Sobre a vaga
+Buscamos uma pessoa engenheira de dados para construir e manter os pipelines de dados que alimentam as áreas de negócio.
+
+Responsabilidades
+- Desenvolver pipelines de dados em Python e SQL.
+- Orquestrar fluxos com Airflow.
+- Modelar dados no data warehouse usando dbt.
+- Garantir a qualidade de dados e documentar as tabelas.
+- Apoiar as áreas de negócio na construção de dashboards em Power BI.
+
+Requisitos
+- Experiência com Python e SQL.
+- Conhecimento de dbt e Airflow.
+- Experiência com nuvem AWS.
+- Inglês intermediário ou avançado.
+
+Diferenciais
+- Spark ou Databricks.
+- Git e CI/CD.

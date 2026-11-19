@@ -1,0 +1,11 @@
+# Nada sai do seu computador: desliga as estatísticas de uso do Streamlit.
+[browser]
+gatherUsageStats = false
+
+[client]
+# Esconde o botão "Deploy" e o menu de desenvolvedor.
+toolbarMode = "minimal"
+
+[server]
+# O app só fica acessível neste computador.
+address = "localhost"
