@@ -9,3 +9,5 @@ toolbarMode = "minimal"
 [server]
 # O app só fica acessível neste computador.
 address = "localhost"
+# Não pergunta e-mail no terminal na primeira vez (travaria quem abre com dois cliques).
+showEmailPrompt = false
