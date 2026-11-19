@@ -43,6 +43,20 @@ class Analise:
     encontradas: list[str]
     faltando: list[str]
 
+    @property
+    def total(self) -> int:
+        """Quantas palavras-chave da vaga o app reconheceu."""
+        return len(self.encontradas) + len(self.faltando)
+
+
+# Abaixo disto a nota depende de pouquíssimas palavras e não diz muita coisa.
+POUCOS_TERMOS = 5
+
+
+def faixa(nota: int) -> str:
+    """Leitura simples da nota, só como guia: baixa (< 40), média (40 a 69) ou alta (70+)."""
+    return "baixa" if nota < 40 else "média" if nota < 70 else "alta"
+
 
 def carregar_termos(caminho: Path | None = None) -> list[Termo]:
     return list(_carregar(str(caminho or DICIONARIO_PADRAO)))

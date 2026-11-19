@@ -64,5 +64,10 @@ def test_dicionario_real_carrega_e_nao_tem_duplicados():
 
 
 def test_dicionario_real_sem_falsos_positivos_em_texto_comum():
-    texto = "Sou uma pessoa organizada, gosto de aprender e trabalhar em equipe com foco no cliente."
+    texto = "Sou uma pessoa tranquila, gosto de aprender e trabalhar em equipe com foco no cliente."
     assert extrair_termos(texto, carregar_termos()) == []
+
+
+def test_competencias_comportamentais_sao_reconhecidas():
+    # De propósito: vagas fora de tecnologia pedem isso, e o currículo deve poder mostrar.
+    assert extrair_termos("Sou organizada, pontual e proativa.", carregar_termos()) ==         ["Organização", "Pontualidade", "Proatividade"]

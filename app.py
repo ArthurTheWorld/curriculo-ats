@@ -6,13 +6,14 @@ from pathlib import Path
 
 import streamlit as st
 
-from curriculo_ats.conferencia import conferir
+from curriculo_ats.conferencia import conferir, perdidos, secoes_perdidas
 from curriculo_ats.estado import aplicar_upload, preencher_secoes
-from curriculo_ats.exportar import gerar_docx, gerar_pdf, nome_arquivo
+from curriculo_ats.exportar import gerar_docx, gerar_pdf, gerar_texto, nome_arquivo
 from curriculo_ats.idioma import detectar_idioma
 from curriculo_ats.leitura import extrair_texto
 from curriculo_ats.modelos import ORDEM, Secoes, somente_contato
-from curriculo_ats.palavras_chave import acrescentar_habilidades, analisar, carregar_termos, priorizar_habilidades
+from curriculo_ats.palavras_chave import (POUCOS_TERMOS, acrescentar_habilidades, analisar, carregar_termos, faixa,
+                                          priorizar_habilidades)
 from curriculo_ats.prompt import montar_prompt
 from curriculo_ats.resposta import RespostaInvalida, ler_resposta
 
@@ -53,9 +54,12 @@ def como_texto(secoes: Secoes) -> str:
     return "\n".join(v for v in secoes.values() if v)
 
 
-def mostrar_analise(analise, rotulo: str, anterior: int | None = None) -> None:
+def mostrar_analise(analise, rotulo: str, anterior: int | None = None, delta_color: str = "normal") -> None:
     delta = f"{analise.nota - anterior:+d} pontos" if anterior is not None else None
-    st.metric(rotulo, f"{analise.nota}%", delta=delta)
+    st.metric(rotulo, f"{analise.nota}%", delta=delta, delta_color=delta_color)
+    st.caption(f"Compatibilidade **{faixa(analise.nota)}**: é a parte das palavras-chave da vaga que aparecem "
+               "no currículo. Como guia: abaixo de 40% é baixa, de 40% a 69% é média e de 70% para cima é alta. "
+               "100% é raro.")
     with st.container(horizontal=True):
         with st.container(border=True):
             st.markdown("**Encontradas no currículo**")
@@ -73,7 +77,8 @@ st.caption("Adapte o seu currículo a uma vaga, em um formato que os sistemas de
 # --- 1. Currículo ---------------------------------------------------------------
 st.header("1. Seu currículo", divider="gray")
 with st.container(horizontal=True, vertical_alignment="bottom"):
-    arquivo = st.file_uploader("Envie o seu currículo (PDF ou Word .docx)", type=["pdf", "docx"], key="arquivo")
+    arquivo = st.file_uploader("Envie o seu currículo em PDF ou Word (.docx): clique em Upload ou arraste o arquivo "
+                               "para o quadro", type=["pdf", "docx"], key="arquivo")
     st.button("Usar o exemplo", key="usar_exemplo", on_click=carregar_exemplo, icon=":material/science:")
 
 if arquivo is not None:
@@ -87,6 +92,10 @@ if st.session_state.get("carregado"):
         st.warning("Não reconheci as seções do seu currículo: tudo ficou em Contato. Isso acontece com "
                    "títulos fora do comum. Mova o texto para os campos certos abaixo.",
                    icon=":material/warning:")
+    else:
+        lidas = [ROTULOS[chave] for chave in ORDEM if st.session_state.get(f"secao_{chave}", "").strip()]
+        st.success(f"Currículo lido: {len(lidas)} seções reconhecidas ({', '.join(lidas)}).",
+                   icon=":material/check_circle:")
     with st.expander("Confira as seções que reconheci (pode editar)", expanded=falhou, icon=":material/edit:"):
         st.caption("A divisão automática nunca é perfeita. Corrija aqui o que tiver ido para o lugar errado.")
         for chave in ORDEM:
@@ -121,6 +130,10 @@ curriculo = como_texto(secoes)
 analise = analise_em_cache(curriculo, vaga, empresa) if tenho else base
 
 mostrar_analise(analise, "Compatibilidade com a vaga", base.nota if tenho else None)
+if base.total < POUCOS_TERMOS:
+    st.warning(f"Reconheci só {base.total} palavra(s)-chave nesta vaga, então a nota diz pouco: use como "
+               "referência, não como veredito. Isso é mais comum em vagas fora de tecnologia. Confira você "
+               "mesmo se o currículo cita o que a vaga pede.", icon=":material/warning:")
 if base.faltando:
     st.pills("Você tem alguma destas e esqueceu de citar? Marque e ela entra nas suas habilidades.",
              base.faltando, selection_mode="multi", key="tenho")
@@ -140,11 +153,13 @@ if modo == "sem_ia":
     final = secoes | {"habilidades": priorizar_habilidades(secoes["habilidades"], analise.encontradas, termos())}
     st.caption("O currículo é reorganizado no formato ATS, e as habilidades que a vaga pede vão para o começo "
                "da lista. Nada é acrescentado além do que você marcou na etapa 3.")
+    with st.expander("Prévia do currículo final", icon=":material/visibility:"):
+        st.text(gerar_texto(final, idioma))
 else:
     idioma = idioma_vaga
     st.markdown("**a.** Copie o prompt abaixo (botão no canto do quadro).")
     st.code(montar_prompt(secoes, vaga, idioma_vaga, analise.faltando, analise.encontradas),
-            language=None, wrap_lines=True)
+            language=None, wrap_lines=True, height=320)
     st.markdown("**b.** Cole em um chat de IA gratuito:")
     with st.container(horizontal=True):
         for nome, url in CHATS.items():
@@ -155,14 +170,19 @@ else:
     # Cópias em chaves comuns (*_salvo) devolvem o que a pessoa colou e editou.
     if "resposta" not in st.session_state and "resposta_salva" in st.session_state:
         st.session_state["resposta"] = st.session_state["resposta_salva"]
-    resposta = st.text_area("**c.** Cole aqui a resposta do chat", key="resposta", height=200)
+    st.markdown("**c.** Cole aqui a resposta do chat")
+    st.caption("Depois de colar, clique fora do campo ou aperte Ctrl+Enter para o app ler a resposta.")
+    resposta = st.text_area("Resposta do chat", key="resposta", height=200, label_visibility="collapsed")
     st.session_state["resposta_salva"] = resposta
-    if not resposta.strip():
-        st.stop()
-    try:
-        lida = ler_resposta(resposta)
-    except RespostaInvalida as erro:
-        st.error(str(erro), icon=":material/error:")
+    lida = None
+    if resposta.strip():
+        try:
+            lida = ler_resposta(resposta)
+        except RespostaInvalida as erro:
+            st.error(str(erro), icon=":material/error:")
+    if lida is None:
+        st.header("5. Baixar", divider="gray")
+        st.info("Cole a resposta do chat no passo **c** para liberar o download.", icon=":material/info:")
         st.stop()
 
     # A resposta preenche campos editáveis (final_*). Só são reescritos quando a resposta
@@ -190,8 +210,17 @@ else:
     else:
         st.success("Nenhum número, tecnologia ou contato novo em relação ao seu currículo.",
                    icon=":material/verified:")
+    sumiram = [f"a seção **{ROTULOS[chave]}**" for chave in secoes_perdidas(secoes, final)]
+    sumiram += [f"**{nome}**" for nome in perdidos(curriculo, como_texto(final), termos())]
+    if sumiram:
+        st.warning(f"A IA tirou do seu currículo: {', '.join(sumiram)}. Se for algo que você tem, "
+                   "recoloque nos campos acima.", icon=":material/content_cut:")
     depois = analise_em_cache(como_texto(final), vaga, empresa)
-    mostrar_analise(depois, "Compatibilidade depois da IA", analise.nota)
+    inflada = depois.nota > analise.nota and any(n.tipo == "termo" for n in novidades)
+    mostrar_analise(depois, "Compatibilidade depois da IA", analise.nota, "off" if inflada else "normal")
+    if inflada:
+        st.warning("Parte dessa subida vem de palavras que não estavam no seu currículo original. Ela só vale "
+                   "se você realmente tiver essas habilidades.", icon=":material/fact_check:")
     if depois.nota <= analise.nota:
         st.info("A nota não subiu porque a IA não pode acrescentar o que você não tem. Ela melhora o texto; "
                 "para a nota subir, marque na etapa 3 as palavras que você tem e esqueceu de citar.",

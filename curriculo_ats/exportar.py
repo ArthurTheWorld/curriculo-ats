@@ -45,6 +45,13 @@ def _titulo(chave: str, idioma: str) -> str:
     return TITULOS.get(idioma, TITULOS["pt"])[chave].upper()
 
 
+def gerar_texto(secoes: Secoes, idioma: str) -> str:
+    """O conteúdo do arquivo final em texto simples, para a prévia na tela."""
+    blocos = ["\n".join(_contato(secoes))]
+    blocos += [f"{_titulo(chave, idioma)}\n" + "\n".join(linhas) for chave, linhas in _secoes_com_conteudo(secoes)]
+    return "\n\n".join(b for b in blocos if b.strip())
+
+
 # --- .docx ------------------------------------------------------------------------
 
 def gerar_docx(secoes: Secoes, idioma: str) -> bytes:

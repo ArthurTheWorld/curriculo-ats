@@ -59,7 +59,7 @@ def test_conferencia_nao_acusa_termo_aninhado():
 def test_sem_falsos_positivos_em_prosa():
     termos = carregar_termos()
     ingles = ("We have a solid team, the rest of the team is swift and lean, with elastic hours, "
-              "a notion of glue code, a spark of creativity and express delivery.")
+              "a notion of glue code, a spark of joy and express delivery.")
     portugues = "Trabalho em um ambiente ágil, na lua, perto do posto Shell, num nó da rede."
     assert extrair_termos(ingles, termos) == []
     assert extrair_termos(portugues, termos) == []

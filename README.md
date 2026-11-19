@@ -105,9 +105,11 @@ A página tem cinco etapas, de cima para baixo. Quer só experimentar? Clique em
 
 **3. Compatibilidade.** O app mostra:
 
-- a **nota**: quantas palavras-chave da vaga aparecem no seu currículo;
+- a **nota**: quantas palavras-chave da vaga aparecem no seu currículo. Como guia, abaixo de 40% é baixa, de 40% a 69% é média e de 70% para cima é alta;
 - as palavras **encontradas**;
 - as palavras **pedidas na vaga e não encontradas**.
+
+Se o app reconhecer menos de 5 palavras-chave na vaga, aparece um aviso: com tão poucas palavras, a nota diz pouco. O dicionário cobre bem tecnologia e dados, e também competências comportamentais (pontualidade, proatividade, organização), comércio e rotinas administrativas. Ainda assim, numa vaga de outra área, confira você mesmo se o currículo cita o que ela pede.
 
 Logo abaixo, cada palavra não encontrada vira um botão. **Você tem aquela habilidade e esqueceu de citar? Clique nela.** Ela entra nas suas habilidades e a nota sobe na hora, sem IA nenhuma. Não tem? Deixe sem marcar.
 
@@ -129,12 +131,12 @@ Logo abaixo, cada palavra não encontrada vira um botão. **Você tem aquela hab
 Este caminho usa um chat de IA gratuito que você já conhece para melhorar a escrita das frases. Não é preciso ter chave de API.
 
 1. Na etapa 4, escolha **Reescrever com IA (copiar e colar)**.
-2. Clique no ícone de copiar no canto do quadro com o prompt.
+2. Passe o mouse sobre o quadro com o prompt e clique no ícone de copiar, no canto de cima à direita.
 3. Clique em um dos botões (ChatGPT, Claude ou Gemini), entre na sua conta gratuita e cole o prompt na conversa.
-4. Copie a resposta inteira do chat e cole no campo **"Cole aqui a resposta do chat"**.
+4. Copie a resposta inteira do chat e cole no campo **"Cole aqui a resposta do chat"**. Depois de colar, clique fora do campo ou aperte `Ctrl + Enter` para o app ler a resposta. Os botões de download só aparecem depois disso.
 5. O app separa a resposta em seções, em campos que você pode editar (**"Confira e edite o currículo reescrito"**).
-6. O app **confere se a IA acrescentou números, tecnologias ou contatos que não estavam no seu currículo**. Se acrescentou, aparece um aviso amarelo listando o quê. Apague nos campos o que não for verdade: o aviso some quando não sobrar nada inventado.
-7. Veja a nova nota de compatibilidade e baixe o arquivo. O arquivo usa o que estiver nos campos editáveis.
+6. O app **confere se a IA acrescentou números, tecnologias ou contatos que não estavam no seu currículo**. Se acrescentou, aparece um aviso amarelo listando o quê. Apague nos campos o que não for verdade: o aviso some quando não sobrar nada inventado. O app também avisa o contrário: **o que a IA tirou** (uma seção inteira, como Idiomas, ou uma palavra-chave que estava no original). Recoloque o que for seu.
+7. Veja a nova nota de compatibilidade e baixe o arquivo. Se a nota subiu por causa de palavras que não estavam no seu currículo, a subida aparece em cinza, com um aviso: ela só vale se você tiver mesmo essas habilidades. O arquivo usa o que estiver nos campos editáveis.
 
 ![O aviso de conferência depois de colar a resposta da IA](docs/imagens/conferencia.jpg)
 
@@ -180,6 +182,9 @@ Abra o navegador e digite `http://localhost:8501`.
 
 **A nota está baixa. Devo colocar todas as palavras que faltam?**
 Não. A nota é um guia, não uma meta. Marque na etapa 3 só o que você realmente sabe fazer. Um currículo honesto com 60% passa melhor por uma entrevista do que um inflado com 100%.
+
+**A vaga não é de tecnologia e a nota deu 0%.**
+O app reconhece as palavras-chave por um dicionário (`dados/termos.yaml`), e ele ainda não cobre todas as áreas. Quando reconhece poucas palavras, ele avisa. Nesse caso, use a nota só como referência, e o caminho com IA para melhorar o texto. Para sugerir termos da sua área, abra uma issue.
 
 **As seções foram separadas errado.**
 Abra "Confira as seções que reconheci" na etapa 1 e mova o texto para o campo certo. O currículo final usa o que estiver nesses campos.

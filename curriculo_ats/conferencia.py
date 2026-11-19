@@ -5,6 +5,7 @@ Não decide nada sozinho: só aponta números, tecnologias e contatos novos para
 import re
 from dataclasses import dataclass
 
+from curriculo_ats.modelos import ORDEM, Secoes
 from curriculo_ats.palavras_chave import Termo, extrair_termos, termos_presentes
 
 
@@ -73,3 +74,15 @@ def conferir(original: str, resposta: str, termos: list[Termo]) -> list[Novidade
             novidades.append(Novidade("contato", contato))
 
     return novidades
+
+
+def perdidos(original: str, resposta: str, termos: list[Termo]) -> list[str]:
+    """Palavras-chave que estavam no currículo original e a resposta da IA tirou."""
+    na_resposta = termos_presentes(resposta, termos)
+    return [nome for nome in extrair_termos(original, termos) if nome not in na_resposta]
+
+
+def secoes_perdidas(original: Secoes, resposta: Secoes) -> list[str]:
+    """Seções que tinham conteúdo no original e ficaram vazias na resposta."""
+    return [chave for chave in ORDEM
+            if original.get(chave, "").strip() and not resposta.get(chave, "").strip()]

@@ -303,9 +303,47 @@
 - {nome: Gestão de stakeholders, sinonimos: [Stakeholder Management], categoria: competencia}
 - {nome: Mentoria, sinonimos: [Mentoring, Mentorship], categoria: competencia}
 - {nome: Negociação, sinonimos: [Negotiation], categoria: competencia}
-- {nome: Atendimento ao cliente, sinonimos: [Customer Service, Customer Success], categoria: competencia}
+- {nome: Atendimento ao cliente, sinonimos: [Atendimento ao público, Atendimento ao publico, Atendimento ao consumidor, Customer Service, Customer Success], categoria: competencia}
 - {nome: Vendas, sinonimos: [Sales], categoria: competencia}
 - {nome: Finanças, sinonimos: [Finance], categoria: competencia}
 - {nome: Contabilidade, sinonimos: [Accounting], categoria: competencia}
 - {nome: Recursos Humanos, sinonimos: [RH, Human Resources, HR], categoria: competencia}
 - {nome: Logística, sinonimos: [Logistics, Supply Chain, Cadeia de suprimentos], categoria: competencia}
+
+# --- Competências comportamentais ----------------------------------------------
+- {nome: Pontualidade, sinonimos: [Pontual, Punctuality, Punctual], categoria: competencia}
+- {nome: Proatividade, sinonimos: [Proativo, Proativa, Proactive, Proactivity], categoria: competencia}
+- {nome: Empatia, sinonimos: [Empático, Empática, Empathy], categoria: competencia}
+- {nome: Criatividade, sinonimos: [Criativo, Criativa, Creativity], categoria: competencia}
+- {nome: Adaptabilidade, sinonimos: [Adaptável, Flexibilidade, Adaptability, Flexibility], categoria: competencia}
+- {nome: Organização, sinonimos: [Organizado, Organizada, Senso de organização, Organizational skills], categoria: competencia, so_sinonimos: true}
+- {nome: Gestão do tempo, sinonimos: [Gestão de tempo, Time management], categoria: competencia}
+- {nome: Atenção aos detalhes, sinonimos: [Atenção a detalhes, Detalhista, Attention to detail], categoria: competencia}
+- {nome: Trabalho sob pressão, sinonimos: [Trabalhar sob pressão, Work under pressure], categoria: competencia}
+- {nome: Vontade de aprender, sinonimos: [Disposição para aprender, Aprendizado contínuo, Willingness to learn, Eager to learn], categoria: competencia}
+- {nome: Inteligência emocional, sinonimos: [Emotional intelligence], categoria: competencia}
+- {nome: Boa apresentação, sinonimos: [Boa aparência], categoria: competencia}
+
+# --- Comércio, vendas e varejo -------------------------------------------------
+- {nome: Controle de estoque, sinonimos: [Gestão de estoque, Organização do estoque, Organização de estoque, Estoque, Inventory management, Inventory], categoria: comercio}
+- {nome: Operação de caixa, sinonimos: [Operador de caixa, Operadora de caixa, Frente de caixa, Cashier], categoria: comercio}
+- {nome: Metas de vendas, sinonimos: [Cumprimento de metas, Bater metas, Sales targets, Sales goals], categoria: comercio}
+- {nome: Prospecção, sinonimos: [Prospecção de clientes, Prospecting, Lead generation], categoria: comercio}
+- {nome: Pós-venda, sinonimos: [Pós venda, After-sales], categoria: comercio}
+- {nome: Televendas, sinonimos: [Telemarketing, Telesales], categoria: comercio}
+- {nome: Reposição de mercadorias, sinonimos: [Repositor, Repositora, Reposição, Merchandising], categoria: comercio}
+- {nome: Visual merchandising, categoria: comercio}
+
+# --- Administrativo e financeiro -----------------------------------------------
+- {nome: Rotinas administrativas, sinonimos: [Auxiliar administrativo, Assistente administrativo, Administrative support], categoria: administrativo}
+- {nome: Contas a pagar, sinonimos: [Accounts payable], categoria: administrativo}
+- {nome: Contas a receber, sinonimos: [Accounts receivable], categoria: administrativo}
+- {nome: Folha de pagamento, sinonimos: [Departamento Pessoal, Payroll], categoria: administrativo}
+- {nome: Emissão de notas fiscais, sinonimos: [Nota fiscal, Notas fiscais, NF-e], categoria: administrativo}
+- {nome: Recepção, sinonimos: [Recepcionista, Receptionist, Front desk], categoria: administrativo}
+- {nome: Arquivo de documentos, sinonimos: [Arquivamento, Gestão de documentos, Document management], categoria: administrativo}
+
+# --- Outros requisitos comuns --------------------------------------------------
+- {nome: CNH, sinonimos: [Carteira de habilitação, Carteira de motorista, "Driver's license"], categoria: requisito}
+- {nome: Primeiros socorros, sinonimos: [First aid], categoria: requisito}
+- {nome: Disponibilidade de horário, sinonimos: [Disponibilidade para viagens, Disponibilidade aos finais de semana], categoria: requisito}
