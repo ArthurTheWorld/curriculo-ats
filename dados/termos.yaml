@@ -1,0 +1,309 @@
+# Dicionário de termos que o curriculo-ats reconhece em vagas e currículos.
+#
+# Cada termo tem:
+#   nome:          como aparece no resultado
+#   sinonimos:     outras formas de escrever (opcional)
+#   categoria:     só para organizar
+#   so_sinonimos:  true quando o nome sozinho é ambíguo (ex.: "Go", "R");
+#                  aí só os sinônimos contam (opcional)
+#
+# Maiúsculas e acentos não importam. Para sugerir um termo novo, abra uma issue ou um PR.
+
+# --- Linguagens de programação -------------------------------------------------
+- {nome: Python, categoria: linguagem}
+- {nome: Java, categoria: linguagem}
+- {nome: JavaScript, sinonimos: [JS, ECMAScript], categoria: linguagem}
+- {nome: TypeScript, sinonimos: [TS], categoria: linguagem}
+- {nome: C++, sinonimos: [cpp], categoria: linguagem}
+- {nome: C#, sinonimos: [csharp, "C sharp"], categoria: linguagem}
+- {nome: Go, sinonimos: [Golang, "linguagem Go"], categoria: linguagem, so_sinonimos: true}
+- {nome: Rust, categoria: linguagem}
+- {nome: Kotlin, categoria: linguagem}
+- {nome: Swift, categoria: linguagem}
+- {nome: PHP, categoria: linguagem}
+- {nome: Ruby, categoria: linguagem}
+- {nome: Scala, categoria: linguagem}
+- {nome: R, sinonimos: ["linguagem R", "R language", "RStudio", "R/RStudio"], categoria: linguagem, so_sinonimos: true}
+- {nome: SQL, categoria: linguagem}
+- {nome: PL/SQL, sinonimos: [PLSQL], categoria: linguagem}
+- {nome: T-SQL, sinonimos: [TSQL], categoria: linguagem}
+- {nome: Bash, sinonimos: [Shell Script, Shell], categoria: linguagem}
+- {nome: PowerShell, categoria: linguagem}
+- {nome: Dart, categoria: linguagem}
+- {nome: Elixir, categoria: linguagem}
+- {nome: Clojure, categoria: linguagem}
+- {nome: Haskell, categoria: linguagem}
+- {nome: Perl, categoria: linguagem}
+- {nome: MATLAB, categoria: linguagem}
+- {nome: SAS, categoria: linguagem}
+- {nome: VBA, categoria: linguagem}
+- {nome: COBOL, categoria: linguagem}
+- {nome: Lua, categoria: linguagem}
+- {nome: Julia, sinonimos: ["linguagem Julia"], categoria: linguagem, so_sinonimos: true}
+- {nome: HTML, sinonimos: [HTML5], categoria: linguagem}
+- {nome: CSS, sinonimos: [CSS3], categoria: linguagem}
+- {nome: Sass, sinonimos: [SCSS], categoria: linguagem}
+- {nome: GraphQL, categoria: linguagem}
+- {nome: Solidity, categoria: linguagem}
+
+# --- Frameworks e bibliotecas --------------------------------------------------
+- {nome: React, sinonimos: [ReactJS, React.js], categoria: framework}
+- {nome: React Native, categoria: framework}
+- {nome: Angular, sinonimos: [AngularJS], categoria: framework}
+- {nome: Vue.js, sinonimos: [Vue, VueJS], categoria: framework}
+- {nome: Next.js, sinonimos: [NextJS], categoria: framework}
+- {nome: Nuxt.js, sinonimos: [Nuxt], categoria: framework}
+- {nome: Svelte, categoria: framework}
+- {nome: Node.js, sinonimos: [NodeJS, Node], categoria: framework}
+- {nome: Express, sinonimos: [Express.js, ExpressJS], categoria: framework}
+- {nome: NestJS, categoria: framework}
+- {nome: Django, categoria: framework}
+- {nome: Flask, categoria: framework}
+- {nome: FastAPI, categoria: framework}
+- {nome: Spring, sinonimos: [Spring Boot, SpringBoot], categoria: framework}
+- {nome: .NET, sinonimos: [dotnet, .NET Core, ASP.NET], categoria: framework}
+- {nome: Laravel, categoria: framework}
+- {nome: Ruby on Rails, sinonimos: [Rails], categoria: framework}
+- {nome: Flutter, categoria: framework}
+- {nome: jQuery, categoria: framework}
+- {nome: Bootstrap, categoria: framework}
+- {nome: Tailwind CSS, sinonimos: [Tailwind, TailwindCSS], categoria: framework}
+- {nome: Redux, categoria: framework}
+- {nome: pandas, categoria: biblioteca}
+- {nome: NumPy, categoria: biblioteca}
+- {nome: SciPy, categoria: biblioteca}
+- {nome: scikit-learn, sinonimos: [sklearn, scikit learn], categoria: biblioteca}
+- {nome: TensorFlow, categoria: biblioteca}
+- {nome: PyTorch, categoria: biblioteca}
+- {nome: Keras, categoria: biblioteca}
+- {nome: XGBoost, categoria: biblioteca}
+- {nome: LightGBM, categoria: biblioteca}
+- {nome: Hugging Face, sinonimos: [HuggingFace, Transformers], categoria: biblioteca}
+- {nome: LangChain, categoria: biblioteca}
+- {nome: OpenCV, categoria: biblioteca}
+- {nome: Matplotlib, categoria: biblioteca}
+- {nome: Seaborn, categoria: biblioteca}
+- {nome: Plotly, categoria: biblioteca}
+- {nome: Streamlit, categoria: biblioteca}
+- {nome: Polars, categoria: biblioteca}
+- {nome: Pydantic, categoria: biblioteca}
+- {nome: SQLAlchemy, categoria: biblioteca}
+- {nome: Jest, categoria: teste}
+- {nome: Cypress, categoria: teste}
+- {nome: Selenium, categoria: teste}
+- {nome: Playwright, categoria: teste}
+- {nome: pytest, categoria: teste}
+- {nome: JUnit, categoria: teste}
+
+# --- Dados e analytics ---------------------------------------------------------
+- {nome: Apache Spark, sinonimos: [Spark, PySpark], categoria: dados}
+- {nome: Apache Kafka, sinonimos: [Kafka], categoria: dados}
+- {nome: Apache Airflow, sinonimos: [Airflow], categoria: dados}
+- {nome: Apache Beam, categoria: dados}
+- {nome: Apache Flink, sinonimos: [Flink], categoria: dados}
+- {nome: Hadoop, sinonimos: [HDFS], categoria: dados}
+- {nome: Hive, categoria: dados}
+- {nome: dbt, sinonimos: [data build tool], categoria: dados}
+- {nome: Databricks, categoria: dados}
+- {nome: Snowflake, categoria: dados}
+- {nome: BigQuery, categoria: dados}
+- {nome: Redshift, categoria: dados}
+- {nome: Synapse, sinonimos: [Azure Synapse], categoria: dados}
+- {nome: Delta Lake, categoria: dados}
+- {nome: Apache Iceberg, sinonimos: [Iceberg], categoria: dados}
+- {nome: DuckDB, categoria: dados}
+- {nome: Airbyte, categoria: dados}
+- {nome: Fivetran, categoria: dados}
+- {nome: dagster, categoria: dados}
+- {nome: Prefect, categoria: dados}
+- {nome: Great Expectations, categoria: dados}
+- {nome: ETL, sinonimos: [ELT], categoria: dados}
+- {nome: Data Warehouse, sinonimos: [DW, DWH], categoria: dados}
+- {nome: Data Lake, sinonimos: [Datalake], categoria: dados}
+- {nome: Lakehouse, categoria: dados}
+- {nome: Modelagem de dados, sinonimos: [Data Modeling, Modelagem dimensional, Dimensional Modeling, Star Schema], categoria: dados}
+- {nome: Pipelines de dados, sinonimos: [Data Pipelines, Data Pipeline, Pipeline de dados], categoria: dados}
+- {nome: Qualidade de dados, sinonimos: [Data Quality], categoria: dados}
+- {nome: Governança de dados, sinonimos: [Data Governance], categoria: dados}
+- {nome: Power BI, sinonimos: [PowerBI], categoria: dados}
+- {nome: Tableau, categoria: dados}
+- {nome: Looker, sinonimos: [Looker Studio, Data Studio], categoria: dados}
+- {nome: Qlik, sinonimos: [QlikView, Qlik Sense], categoria: dados}
+- {nome: Metabase, categoria: dados}
+- {nome: Excel, sinonimos: [Microsoft Excel, MS Excel], categoria: dados}
+- {nome: Google Sheets, sinonimos: [Planilhas Google], categoria: dados}
+- {nome: DAX, categoria: dados}
+- {nome: Business Intelligence, sinonimos: [BI], categoria: dados}
+- {nome: Machine Learning, sinonimos: [Aprendizado de máquina, ML], categoria: dados}
+- {nome: Deep Learning, sinonimos: [Aprendizado profundo], categoria: dados}
+- {nome: Inteligência Artificial, sinonimos: [Artificial Intelligence, IA, AI], categoria: dados}
+- {nome: IA generativa, sinonimos: [Generative AI, GenAI, LLM, LLMs], categoria: dados}
+- {nome: NLP, sinonimos: [PLN, Processamento de linguagem natural, Natural Language Processing], categoria: dados}
+- {nome: Visão computacional, sinonimos: [Computer Vision], categoria: dados}
+- {nome: Estatística, sinonimos: [Statistics], categoria: dados}
+- {nome: Testes A/B, sinonimos: [A/B Testing, Teste A/B], categoria: dados}
+- {nome: MLOps, categoria: dados}
+- {nome: MLflow, categoria: dados}
+- {nome: Feature Store, categoria: dados}
+- {nome: Séries temporais, sinonimos: [Time Series], categoria: dados}
+
+# --- Bancos de dados ----------------------------------------------------------
+- {nome: PostgreSQL, sinonimos: [Postgres], categoria: banco}
+- {nome: MySQL, categoria: banco}
+- {nome: SQL Server, sinonimos: [MSSQL, Microsoft SQL Server], categoria: banco}
+- {nome: Oracle, sinonimos: [Oracle Database], categoria: banco}
+- {nome: SQLite, categoria: banco}
+- {nome: MariaDB, categoria: banco}
+- {nome: MongoDB, sinonimos: [Mongo], categoria: banco}
+- {nome: Redis, categoria: banco}
+- {nome: Cassandra, categoria: banco}
+- {nome: DynamoDB, categoria: banco}
+- {nome: Elasticsearch, sinonimos: [Elastic, OpenSearch], categoria: banco}
+- {nome: Neo4j, categoria: banco}
+- {nome: Firebase, sinonimos: [Firestore], categoria: banco}
+- {nome: NoSQL, categoria: banco}
+
+# --- Nuvem --------------------------------------------------------------------
+- {nome: AWS, sinonimos: [Amazon Web Services], categoria: nuvem}
+- {nome: Azure, sinonimos: [Microsoft Azure], categoria: nuvem}
+- {nome: Google Cloud, sinonimos: [GCP, Google Cloud Platform], categoria: nuvem}
+- {nome: Oracle Cloud, sinonimos: [OCI], categoria: nuvem}
+- {nome: AWS Lambda, sinonimos: [Lambda], categoria: nuvem}
+- {nome: Amazon S3, sinonimos: [S3], categoria: nuvem}
+- {nome: Amazon EC2, sinonimos: [EC2], categoria: nuvem}
+- {nome: AWS Glue, sinonimos: [Glue], categoria: nuvem}
+- {nome: Amazon Athena, sinonimos: [Athena], categoria: nuvem}
+- {nome: Amazon EMR, sinonimos: [EMR], categoria: nuvem}
+- {nome: Azure Data Factory, sinonimos: [ADF, Data Factory], categoria: nuvem}
+- {nome: Microsoft Fabric, categoria: nuvem}
+- {nome: Cloud Functions, categoria: nuvem}
+- {nome: Cloud Run, categoria: nuvem}
+- {nome: Serverless, categoria: nuvem}
+
+# --- DevOps e infraestrutura --------------------------------------------------
+- {nome: Docker, categoria: devops}
+- {nome: Kubernetes, sinonimos: [K8s, EKS, AKS, GKE], categoria: devops}
+- {nome: Terraform, categoria: devops}
+- {nome: Ansible, categoria: devops}
+- {nome: CI/CD, sinonimos: [CI, CD, Integração contínua, Continuous Integration, Entrega contínua], categoria: devops}
+- {nome: Jenkins, categoria: devops}
+- {nome: GitHub Actions, categoria: devops}
+- {nome: GitLab CI, categoria: devops}
+- {nome: Azure DevOps, categoria: devops}
+- {nome: Git, categoria: devops}
+- {nome: GitHub, categoria: devops}
+- {nome: GitLab, categoria: devops}
+- {nome: Bitbucket, categoria: devops}
+- {nome: Linux, categoria: devops}
+- {nome: Windows Server, categoria: devops}
+- {nome: Nginx, categoria: devops}
+- {nome: Prometheus, categoria: devops}
+- {nome: Grafana, categoria: devops}
+- {nome: Datadog, categoria: devops}
+- {nome: New Relic, categoria: devops}
+- {nome: Splunk, categoria: devops}
+- {nome: Observabilidade, sinonimos: [Observability, Monitoramento, Monitoring], categoria: devops}
+- {nome: Infraestrutura como código, sinonimos: [Infrastructure as Code, IaC], categoria: devops}
+- {nome: SRE, sinonimos: [Site Reliability Engineering], categoria: devops}
+- {nome: DevOps, categoria: devops}
+- {nome: Microsserviços, sinonimos: [Microservices, Microsserviço, Microservice], categoria: arquitetura}
+- {nome: APIs REST, sinonimos: [REST, RESTful, API REST, REST API], categoria: arquitetura}
+- {nome: gRPC, categoria: arquitetura}
+- {nome: Mensageria, sinonimos: [RabbitMQ, SQS, Pub/Sub, Messaging], categoria: arquitetura}
+- {nome: Arquitetura de software, sinonimos: [Software Architecture], categoria: arquitetura}
+- {nome: Clean Architecture, sinonimos: [Arquitetura limpa], categoria: arquitetura}
+- {nome: Design Patterns, sinonimos: [Padrões de projeto], categoria: arquitetura}
+- {nome: SOLID, categoria: arquitetura}
+- {nome: DDD, sinonimos: [Domain-Driven Design], categoria: arquitetura}
+- {nome: TDD, sinonimos: [Test-Driven Development], categoria: arquitetura}
+- {nome: Testes automatizados, sinonimos: [Automated Testing, Testes unitários, Unit Testing, Testes de integração], categoria: arquitetura}
+- {nome: Segurança da informação, sinonimos: [Information Security, Cibersegurança, Cybersecurity, InfoSec], categoria: seguranca}
+- {nome: OWASP, categoria: seguranca}
+- {nome: OAuth, sinonimos: [OAuth2, OAuth 2.0, OpenID Connect], categoria: seguranca}
+- {nome: LGPD, categoria: seguranca}
+- {nome: GDPR, categoria: seguranca}
+
+# --- Produto, design e gestão -------------------------------------------------
+- {nome: Scrum, categoria: metodologia}
+- {nome: Kanban, categoria: metodologia}
+- {nome: Métodos ágeis, sinonimos: [Agile, Ágil, Metodologias ágeis, Agile methodologies], categoria: metodologia}
+- {nome: Lean, categoria: metodologia}
+- {nome: Six Sigma, sinonimos: [Lean Six Sigma], categoria: metodologia}
+- {nome: OKR, sinonimos: [OKRs], categoria: metodologia}
+- {nome: KPI, sinonimos: [KPIs, Indicadores de desempenho], categoria: metodologia}
+- {nome: Gestão de projetos, sinonimos: [Project Management, Gerenciamento de projetos], categoria: metodologia}
+- {nome: Gestão de produto, sinonimos: [Product Management], categoria: metodologia}
+- {nome: Design Thinking, categoria: metodologia}
+- {nome: UX, sinonimos: [User Experience, Experiência do usuário], categoria: design}
+- {nome: UI, sinonimos: [User Interface, Interface do usuário], categoria: design}
+- {nome: Pesquisa com usuários, sinonimos: [User Research, UX Research], categoria: design}
+- {nome: Figma, categoria: design}
+- {nome: Adobe XD, categoria: design}
+- {nome: Photoshop, sinonimos: [Adobe Photoshop], categoria: design}
+- {nome: Illustrator, sinonimos: [Adobe Illustrator], categoria: design}
+- {nome: Jira, categoria: ferramenta}
+- {nome: Confluence, categoria: ferramenta}
+- {nome: Trello, categoria: ferramenta}
+- {nome: Notion, categoria: ferramenta}
+- {nome: Asana, categoria: ferramenta}
+- {nome: Slack, categoria: ferramenta}
+- {nome: Postman, categoria: ferramenta}
+- {nome: VS Code, sinonimos: [Visual Studio Code], categoria: ferramenta}
+- {nome: SAP, categoria: ferramenta}
+- {nome: Salesforce, categoria: ferramenta}
+- {nome: HubSpot, categoria: ferramenta}
+- {nome: Google Analytics, sinonimos: [GA4], categoria: ferramenta}
+- {nome: SEO, categoria: marketing}
+- {nome: Marketing digital, sinonimos: [Digital Marketing], categoria: marketing}
+- {nome: CRM, categoria: ferramenta}
+- {nome: ERP, categoria: ferramenta}
+- {nome: Microsoft Office, sinonimos: [Pacote Office, MS Office, Office 365, Microsoft 365], categoria: ferramenta}
+- {nome: Power Automate, categoria: ferramenta}
+- {nome: Power Apps, sinonimos: [PowerApps], categoria: ferramenta}
+- {nome: RPA, sinonimos: [UiPath, Automation Anywhere], categoria: ferramenta}
+- {nome: Mobile, sinonimos: [Android, iOS], categoria: plataforma}
+- {nome: Front-end, sinonimos: [Frontend, Front end], categoria: area}
+- {nome: Back-end, sinonimos: [Backend, Back end], categoria: area}
+- {nome: Full stack, sinonimos: [Fullstack, Full-stack], categoria: area}
+- {nome: Engenharia de dados, sinonimos: [Data Engineering], categoria: area}
+- {nome: Ciência de dados, sinonimos: [Data Science], categoria: area}
+- {nome: Análise de dados, sinonimos: [Data Analysis, Data Analytics], categoria: area}
+
+# --- Certificações ------------------------------------------------------------
+- {nome: AWS Certified, sinonimos: [AWS Solutions Architect, AWS Cloud Practitioner, AWS Data Engineer], categoria: certificacao}
+- {nome: Azure Certified, sinonimos: [AZ-900, DP-900, DP-203, AZ-104, AI-900], categoria: certificacao}
+- {nome: Google Cloud Certified, sinonimos: [Professional Data Engineer, Associate Cloud Engineer], categoria: certificacao}
+- {nome: Databricks Certified, sinonimos: [Databricks Certified Data Engineer], categoria: certificacao}
+- {nome: PMP, categoria: certificacao}
+- {nome: CSM, sinonimos: [Certified ScrumMaster, PSM, Professional Scrum Master], categoria: certificacao}
+- {nome: ITIL, categoria: certificacao}
+- {nome: CKA, sinonimos: [Certified Kubernetes Administrator], categoria: certificacao}
+- {nome: CompTIA, sinonimos: [Security+, Network+], categoria: certificacao}
+- {nome: CISSP, categoria: certificacao}
+
+# --- Idiomas ------------------------------------------------------------------
+- {nome: Inglês, sinonimos: [English, Inglês avançado, Inglês fluente, Advanced English, Fluent English], categoria: idioma}
+- {nome: Espanhol, sinonimos: [Spanish, Español], categoria: idioma}
+- {nome: Francês, sinonimos: [French], categoria: idioma}
+- {nome: Alemão, sinonimos: [German], categoria: idioma}
+- {nome: Italiano, sinonimos: [Italian], categoria: idioma}
+- {nome: Mandarim, sinonimos: [Mandarin, Chinês], categoria: idioma}
+- {nome: Japonês, sinonimos: [Japanese], categoria: idioma}
+- {nome: Português, sinonimos: [Portuguese], categoria: idioma}
+- {nome: Libras, categoria: idioma}
+
+# --- Competências profissionais (as mais citadas em vagas) --------------------
+- {nome: Comunicação, sinonimos: [Communication, Communication skills], categoria: competencia}
+- {nome: Liderança, sinonimos: [Leadership], categoria: competencia}
+- {nome: Trabalho em equipe, sinonimos: [Teamwork], categoria: competencia}
+- {nome: Resolução de problemas, sinonimos: [Problem solving, Problem-solving], categoria: competencia}
+- {nome: Pensamento analítico, sinonimos: [Analytical thinking, Analytical skills], categoria: competencia}
+- {nome: Gestão de stakeholders, sinonimos: [Stakeholder Management], categoria: competencia}
+- {nome: Mentoria, sinonimos: [Mentoring, Mentorship], categoria: competencia}
+- {nome: Negociação, sinonimos: [Negotiation], categoria: competencia}
+- {nome: Atendimento ao cliente, sinonimos: [Customer Service, Customer Success], categoria: competencia}
+- {nome: Vendas, sinonimos: [Sales], categoria: competencia}
+- {nome: Finanças, sinonimos: [Finance], categoria: competencia}
+- {nome: Contabilidade, sinonimos: [Accounting], categoria: competencia}
+- {nome: Recursos Humanos, sinonimos: [RH, Human Resources, HR], categoria: competencia}
+- {nome: Logística, sinonimos: [Logistics, Supply Chain, Cadeia de suprimentos], categoria: competencia}
