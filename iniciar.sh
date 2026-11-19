@@ -5,19 +5,19 @@
 set -e
 cd "$(dirname "$0")"
 
-# 1. Encontrar o Python (3.10 ou mais novo)
+# 1. Encontrar o Python (3.11 ou mais novo)
 #    Primeiro as versões testadas: a mais nova de todas pode não ter pacotes prontos ainda.
 PY=""
-for candidato in python3.13 python3.12 python3.11 python3.10 python3 python; do
+for candidato in python3.13 python3.12 python3.11 python3 python; do
     if command -v "$candidato" >/dev/null 2>&1 && \
-       "$candidato" -c "import sys; sys.exit(sys.version_info < (3, 10))" 2>/dev/null; then
+       "$candidato" -c "import sys; sys.exit(sys.version_info < (3, 11))" 2>/dev/null; then
         PY="$candidato"
         break
     fi
 done
 if [ -z "$PY" ]; then
     echo
-    echo "  Python 3.10 ou mais novo não foi encontrado."
+    echo "  Python 3.11 ou mais novo não foi encontrado."
     echo "  Veja o passo 1 do README: \"Instalar o Python\"."
     echo
     exit 1

@@ -46,7 +46,7 @@ São três passos, e você só faz isso uma vez.
 
 ### Passo 1: instalar o Python
 
-O app é feito em Python, um programa gratuito. **Instale o Python 3.13** (o app também funciona do 3.10 ao 3.13). Se você já tem uma dessas versões, pule para o passo 2.
+O app é feito em Python, um programa gratuito. **Instale o Python 3.13** (o app também funciona com o 3.11 e o 3.12). Se você já tem uma dessas versões, pule para o passo 2.
 
 > **Por que não a versão mais nova?** Logo depois que sai uma versão nova do Python, algumas bibliotecas ainda não têm pacotes prontos para ela, e a instalação falha pedindo um "compilador C++". Se você já tem uma versão mais nova instalada, tudo bem: instale a 3.13 também. Elas convivem, e o `iniciar.bat` escolhe a 3.13 sozinho.
 
@@ -151,7 +151,7 @@ O prompt já pede para a IA não inventar nada, mas IAs às vezes inventam mesmo
 
 ## Perguntas frequentes e problemas comuns
 
-**A janela diz "Python 3.10 ou mais novo não foi encontrado".**
+**A janela diz "Python 3.11 ou mais novo não foi encontrado".**
 O Python não está instalado ou foi instalado sem marcar "Add python.exe to PATH". Instale de novo pelo [passo 1](#passo-1-instalar-o-python) e marque a caixa. Depois feche e abra o `iniciar.bat` de novo.
 
 **A instalação falhou com "Microsoft Visual C++ 14.0 or greater is required" ou "Failed to build".**

@@ -102,6 +102,15 @@ def test_resposta_sobrevive_a_troca_de_modo():
     assert "Dados" in at.text_area(key="resposta").value
 
 
+# O Streamlit 1.66+ exige Python 3.11: scripts e CI não podem aceitar o 3.10
+def test_scripts_e_ci_exigem_python_311():
+    for nome in ("iniciar.bat", "iniciar.sh", ".github/workflows/testes.yml"):
+        conteudo = (RAIZ / nome).read_text(encoding="utf-8")
+        assert "3.10" not in conteudo and "(3, 10)" not in conteudo, nome
+    for nome in ("iniciar.bat", "iniciar.sh"):
+        assert "(3, 11)" in (RAIZ / nome).read_text(encoding="utf-8")
+
+
 # 9. iniciar.sh explica o que instalar quando falta o python3-venv
 def test_iniciar_sh_explica_python3_venv():
     assert "sudo apt install python3-venv" in (RAIZ / "iniciar.sh").read_text(encoding="utf-8")

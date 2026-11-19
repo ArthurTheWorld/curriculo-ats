@@ -5,17 +5,17 @@ chcp 65001 >nul
 cd /d "%~dp0"
 title Curriculo ATS
 
-rem 1. Encontrar o Python (3.10 ou mais novo)
+rem 1. Encontrar o Python (3.11 ou mais novo)
 rem    Primeiro as versoes testadas: a mais nova de todas pode nao ter pacotes prontos ainda.
 set "PY="
-for %%V in (3.13 3.12 3.11 3.10) do (
+for %%V in (3.13 3.12 3.11) do (
     if not defined PY py -%%V -c "import sys" >nul 2>nul && set "PY=py -%%V"
 )
-if not defined PY py -3 -c "import sys; sys.exit(sys.version_info < (3, 10))" >nul 2>nul && set "PY=py -3"
-if not defined PY python -c "import sys; sys.exit(sys.version_info < (3, 10))" >nul 2>nul && set "PY=python"
+if not defined PY py -3 -c "import sys; sys.exit(sys.version_info < (3, 11))" >nul 2>nul && set "PY=py -3"
+if not defined PY python -c "import sys; sys.exit(sys.version_info < (3, 11))" >nul 2>nul && set "PY=python"
 if not defined PY (
     echo.
-    echo  Python 3.10 ou mais novo nao foi encontrado neste computador.
+    echo  Python 3.11 ou mais novo nao foi encontrado neste computador.
     echo  Veja o passo 1 do README: "Instalar o Python".
     echo  Lembre de marcar "Add python.exe to PATH" na instalacao.
     echo.

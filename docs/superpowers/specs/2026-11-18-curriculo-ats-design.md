@@ -40,7 +40,7 @@ O motivo de ser um projeto separado do Ultron: precisa ser **fácil de compartil
 
 ## Restrições
 
-- Python 3.10 ou mais novo. Bibliotecas só de Python puro e populares, sem dependência de sistema (nada de LibreOffice, Tesseract, wkhtmltopdf).
+- Python 3.11 ou mais novo (o Streamlit 1.66+ não suporta o 3.10, que chegou ao fim do suporte em outubro de 2026). Bibliotecas só de Python puro e populares, sem dependência de sistema (nada de LibreOffice, Tesseract, wkhtmltopdf).
 - Funciona offline no modo sem IA.
 - Interface em português do Brasil. O currículo gerado sai no **idioma da vaga** (português ou inglês).
 - Repositório público `ArthurTheWorld/curriculo-ats`, licença MIT, com testes e CI.
