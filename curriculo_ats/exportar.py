@@ -11,9 +11,13 @@ from docx.shared import Cm, Pt
 from fpdf import FPDF
 
 from curriculo_ats.idioma import TITULOS
-from curriculo_ats.modelos import ORDEM, Secoes, normalizar
+from curriculo_ats.modelos import ORDEM, Secoes, limpar_controle, normalizar
 
 _MARCADOR = re.compile(r"^\s*[-*•]\s+")
+
+
+def _linhas(texto: str) -> list[str]:
+    return [linha.strip() for linha in limpar_controle(texto).splitlines() if linha.strip()]
 
 
 def _secoes_com_conteudo(secoes: Secoes) -> list[tuple[str, list[str]]]:
@@ -21,14 +25,14 @@ def _secoes_com_conteudo(secoes: Secoes) -> list[tuple[str, list[str]]]:
     for chave in ORDEM:
         if chave == "contato":
             continue
-        linhas = [linha.strip() for linha in secoes.get(chave, "").splitlines() if linha.strip()]
+        linhas = _linhas(secoes.get(chave, ""))
         if linhas:
             resultado.append((chave, linhas))
     return resultado
 
 
 def _contato(secoes: Secoes) -> list[str]:
-    return [linha.strip() for linha in secoes.get("contato", "").splitlines() if linha.strip()]
+    return _linhas(secoes.get("contato", ""))
 
 
 def _titulo(chave: str, idioma: str) -> str:

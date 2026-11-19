@@ -4,6 +4,7 @@ Tudo por código, sem IA: um dicionário de termos (dados/termos.yaml) mais term
 técnicos que a própria vaga repete.
 """
 import re
+import unicodedata
 from dataclasses import dataclass
 from functools import lru_cache
 from pathlib import Path
@@ -27,9 +28,13 @@ class Termo:
     sinonimos: tuple[str, ...]
     categoria: str
     so_sinonimos: bool = False
+    # Formas que só contam com estas maiúsculas: "Spark" é tecnologia, "spark" é palavra comum.
+    exatos: tuple[str, ...] = ()
 
     def formas(self) -> tuple[str, ...]:
-        return self.sinonimos if self.so_sinonimos else (self.nome, *self.sinonimos)
+        """Formas comparadas sem diferenciar maiúsculas e acentos."""
+        nome = () if self.so_sinonimos or self.nome in self.exatos else (self.nome,)
+        return (*nome, *self.sinonimos)
 
 
 @dataclass
@@ -53,35 +58,55 @@ def _carregar(caminho: str) -> tuple[Termo, ...]:
             sinonimos=tuple(str(s) for s in item.get("sinonimos") or ()),
             categoria=str(item.get("categoria", "")),
             so_sinonimos=bool(item.get("so_sinonimos", False)),
+            exatos=tuple(str(s) for s in item.get("exatos") or ()),
         )
         for item in itens
     )
 
 
+def _sem_acento(texto: str) -> str:
+    decomposto = unicodedata.normalize("NFKD", texto)
+    return "".join(c for c in decomposto if not unicodedata.combining(c))
+
+
 @lru_cache(maxsize=4096)
-def _padrao(forma: str) -> re.Pattern:
-    return re.compile(_ANTES + re.escape(normalizar(forma)) + _DEPOIS)
+def _padrao(forma: str, exato: bool = False) -> re.Pattern:
+    alvo = _sem_acento(forma) if exato else _sem_acento(forma).lower()
+    return re.compile(_ANTES + re.escape(alvo) + _DEPOIS)
 
 
-def _ocorrencias(texto_normalizado: str, forma: str) -> list[tuple[int, int]]:
-    return [m.span() for m in _padrao(forma).finditer(texto_normalizado)]
+def _versoes(texto: str) -> tuple[str, str]:
+    """(sem acento e minúsculo, sem acento com as maiúsculas originais) — mesmo tamanho."""
+    sem_acento = _sem_acento(texto)
+    return sem_acento.lower(), sem_acento
+
+
+def _ocorrencias_do_termo(versoes: tuple[str, str], termo: Termo) -> list[tuple[int, int]]:
+    minusculo, original = versoes
+    spans = [m.span() for forma in termo.formas() for m in _padrao(forma).finditer(minusculo)]
+    spans += [m.span() for forma in termo.exatos for m in _padrao(forma, True).finditer(original)]
+    return spans
 
 
 def contem(texto: str, forma: str) -> bool:
     """O texto cita esta forma como palavra inteira (sem diferenciar acento e caixa)?"""
-    return bool(_padrao(forma).search(normalizar(texto)))
+    return bool(_padrao(forma).search(_sem_acento(texto).lower()))
+
+
+def termos_presentes(texto: str, termos: list[Termo]) -> set[str]:
+    """Todos os termos citados, inclusive os que estão dentro de outro maior (AWS em AWS Lambda)."""
+    versoes = _versoes(texto)
+    return {t.nome for t in termos if _ocorrencias_do_termo(versoes, t)}
 
 
 def extrair_termos(texto: str, termos: list[Termo]) -> list[str]:
     """Nomes canônicos dos termos citados, na ordem em que aparecem, sem repetição.
 
-    Quando um termo está dentro de outro maior (BI dentro de Power BI), só o maior conta.
+    Para listar o que uma vaga pede: quando um termo está dentro de outro maior
+    (BI dentro de Power BI), só o maior conta.
     """
-    alvo = normalizar(texto)
-    achados: list[tuple[int, int, str]] = []  # (início, fim, nome)
-    for termo in termos:
-        for forma in termo.formas():
-            achados.extend((ini, fim, termo.nome) for ini, fim in _ocorrencias(alvo, forma))
+    versoes = _versoes(texto)
+    achados = [(ini, fim, t.nome) for t in termos for ini, fim in _ocorrencias_do_termo(versoes, t)]
 
     # Maiores primeiro; descarta o que fica dentro de um trecho já aceito.
     achados.sort(key=lambda a: (-(a[1] - a[0]), a[0]))
@@ -106,7 +131,7 @@ def _parece_tecnico(token: str) -> bool:
 
 
 def _inicio_de_frase(texto: str, posicao: int) -> bool:
-    anterior = texto[:posicao].rstrip()
+    anterior = texto[max(0, posicao - 20):posicao].rstrip()
     return not anterior or anterior[-1] in ".!?:;\n•-–—"
 
 
@@ -138,34 +163,37 @@ def analisar(curriculo: str, vaga: str, termos: list[Termo]) -> Analise:
     da_vaga = extrair_termos(vaga, termos)
     # Extras que já são forma de um termo do dicionário (ex.: "Spark") seriam duplicados.
     da_vaga += [extra for extra in termos_extras(vaga, da_vaga) if not extrair_termos(extra, termos)]
-    no_curriculo = set(extrair_termos(curriculo, termos))
+    no_curriculo = termos_presentes(curriculo, termos)
 
-    termo_por_nome = {t.nome: t for t in termos}
+    do_dicionario = {t.nome for t in termos}
     encontradas, faltando = [], []
     for nome in da_vaga:
-        termo = termo_por_nome.get(nome)
-        presente = nome in no_curriculo if termo else contem(curriculo, nome)
+        presente = nome in no_curriculo if nome in do_dicionario else contem(curriculo, nome)
         (encontradas if presente else faltando).append(nome)
 
     nota = round(100 * len(encontradas) / len(da_vaga)) if da_vaga else 0
     return Analise(nota=nota, encontradas=encontradas, faltando=faltando)
 
 
-_SEPARADORES = re.compile(r"\s*[,;|•\n]\s*")
+_ROTULO = re.compile(r"^\s*[^,;:|]{1,40}:\s")
+_SEPARADORES = re.compile(r"\s*[,;|•]\s*")
 
 
-def priorizar_habilidades(habilidades: str, encontradas: list[str]) -> str:
-    """Põe no começo as habilidades que a vaga pede. Não acrescenta nem remove nada."""
-    itens = [i for i in _SEPARADORES.split(habilidades.strip()) if i]
-    if not itens:
+def priorizar_habilidades(habilidades: str, encontradas: list[str], termos: list[Termo]) -> str:
+    """Põe no começo as habilidades que a vaga pede. Não acrescenta, remove nem reescreve nada.
+
+    - Várias linhas (listas com marcador ou por categoria): reordena linhas inteiras.
+    - Uma linha "Python, SQL, Excel": reordena os itens, exceto se tiver rótulo ("Ferramentas: ...").
+    """
+    def posicao(trecho: str) -> int:
+        presentes = termos_presentes(trecho, termos)
+        indices = [i for i, nome in enumerate(encontradas) if nome in presentes or contem(trecho, nome)]
+        return min(indices, default=len(encontradas))
+
+    linhas = [linha for linha in habilidades.splitlines() if linha.strip()]
+    if len(linhas) > 1:
+        return "\n".join(sorted(linhas, key=posicao))  # sorted é estável: o resto mantém a ordem
+    if not linhas or _ROTULO.match(linhas[0]):
         return habilidades
-
-    def posicao(item: str) -> int:
-        for indice, nome in enumerate(encontradas):
-            if contem(item, nome) or contem(nome, item):
-                return indice
-        return len(encontradas)
-
-    ordenados = sorted(itens, key=posicao)  # sorted é estável: o resto mantém a ordem original
-    separador = "\n" if "\n" in habilidades and "," not in habilidades else ", "
-    return separador.join(ordenados)
+    itens = [i for i in _SEPARADORES.split(linhas[0].strip()) if i]
+    return ", ".join(sorted(itens, key=posicao))

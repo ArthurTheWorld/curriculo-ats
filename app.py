@@ -7,14 +7,14 @@ from pathlib import Path
 import streamlit as st
 
 from curriculo_ats.conferencia import conferir
+from curriculo_ats.estado import aplicar_upload, preencher_secoes
 from curriculo_ats.exportar import gerar_docx, gerar_pdf, nome_arquivo
 from curriculo_ats.idioma import detectar_idioma
-from curriculo_ats.leitura import ArquivoIlegivel, extrair_texto
-from curriculo_ats.modelos import ORDEM, Secoes
+from curriculo_ats.leitura import extrair_texto
+from curriculo_ats.modelos import ORDEM, Secoes, somente_contato
 from curriculo_ats.palavras_chave import analisar, carregar_termos, priorizar_habilidades
 from curriculo_ats.prompt import montar_prompt
 from curriculo_ats.resposta import RespostaInvalida, ler_resposta
-from curriculo_ats.secoes import dividir_secoes
 
 RAIZ = Path(__file__).resolve().parent
 ROTULOS = {
@@ -32,15 +32,9 @@ def termos():
     return carregar_termos()
 
 
-def preencher_secoes(texto: str) -> None:
-    for chave, conteudo in dividir_secoes(texto).items():
-        st.session_state[f"secao_{chave}"] = conteudo
-    st.session_state["carregado"] = True
-
-
 def carregar_exemplo() -> None:
     dados = (RAIZ / "exemplos" / "curriculo_exemplo.docx").read_bytes()
-    preencher_secoes(extrair_texto("curriculo_exemplo.docx", dados))
+    preencher_secoes(st.session_state, extrair_texto("curriculo_exemplo.docx", dados))
     st.session_state["vaga"] = (RAIZ / "exemplos" / "vaga_exemplo.txt").read_text(encoding="utf-8")
     st.session_state["empresa"] = "Empresa Exemplo"
 
@@ -76,15 +70,18 @@ with st.container(horizontal=True, vertical_alignment="bottom"):
     arquivo = st.file_uploader("Envie o seu currículo (PDF ou Word .docx)", type=["pdf", "docx"], key="arquivo")
     st.button("Usar o exemplo", key="usar_exemplo", on_click=carregar_exemplo, icon=":material/science:")
 
-if arquivo is not None and arquivo.file_id != st.session_state.get("arquivo_id"):
-    st.session_state["arquivo_id"] = arquivo.file_id
-    try:
-        preencher_secoes(extrair_texto(arquivo.name, arquivo.getvalue()))
-    except ArquivoIlegivel as erro:
-        st.error(str(erro), icon=":material/error:")
+if arquivo is not None:
+    aplicar_upload(st.session_state, arquivo.name, arquivo.getvalue(), arquivo.file_id)
+if st.session_state.get("erro_upload"):
+    st.error(st.session_state["erro_upload"], icon=":material/error:")
 
 if st.session_state.get("carregado"):
-    with st.expander("Confira as seções que reconheci (pode editar)", expanded=False, icon=":material/edit:"):
+    falhou = somente_contato(secoes_da_tela())
+    if falhou:
+        st.warning("Não reconheci as seções do seu currículo: tudo ficou em Contato. Isso acontece com "
+                   "títulos fora do comum. Mova o texto para os campos certos abaixo.",
+                   icon=":material/warning:")
+    with st.expander("Confira as seções que reconheci (pode editar)", expanded=falhou, icon=":material/edit:"):
         st.caption("A divisão automática nunca é perfeita. Corrija aqui o que tiver ido para o lugar errado.")
         for chave in ORDEM:
             st.text_area(ROTULOS[chave], key=f"secao_{chave}", height=120 if chave == "experiencia" else 80)
@@ -120,7 +117,7 @@ if modo == "sem_ia":
     if idioma != idioma_vaga:
         st.info("O seu currículo e a vaga estão em idiomas diferentes. Sem IA, o conteúdo não é traduzido: "
                 "para isso, use o caminho com IA.", icon=":material/translate:")
-    final = secoes | {"habilidades": priorizar_habilidades(secoes["habilidades"], analise.encontradas)}
+    final = secoes | {"habilidades": priorizar_habilidades(secoes["habilidades"], analise.encontradas, termos())}
     st.caption("O currículo é reorganizado no formato ATS, e as habilidades que a vaga pede vão para o começo "
                "da lista. Nada é acrescentado.")
 else:
@@ -137,16 +134,29 @@ else:
     if not resposta.strip():
         st.stop()
     try:
-        final = ler_resposta(resposta)
+        lida = ler_resposta(resposta)
     except RespostaInvalida as erro:
         st.error(str(erro), icon=":material/error:")
         st.stop()
 
-    novidades = conferir(curriculo, resposta, termos())
+    # A resposta preenche campos editáveis (final_*). Só são reescritos quando a resposta
+    # colada muda, para não apagar o que a pessoa já corrigiu.
+    faltam_campos = any(f"final_{chave}" not in st.session_state for chave in ORDEM)
+    if st.session_state.get("resposta_lida") != resposta or faltam_campos:
+        for chave in ORDEM:
+            st.session_state[f"final_{chave}"] = lida[chave]
+        st.session_state["resposta_lida"] = resposta
+
+    with st.expander("**d.** Confira e edite o currículo reescrito", expanded=True, icon=":material/edit:"):
+        for chave in ORDEM:
+            st.text_area(ROTULOS[chave], key=f"final_{chave}", height=120 if chave == "experiencia" else 80)
+    final = {chave: st.session_state[f"final_{chave}"] for chave in ORDEM}
+
+    novidades = conferir(curriculo, como_texto(final), termos())
     if novidades:
         itens = ", ".join(f"**{n.valor}**" for n in novidades)
-        st.warning(f"A resposta cita {itens}, que não estão no seu currículo original. "
-                   "Confira e apague o que não for verdade antes de usar.", icon=":material/fact_check:")
+        st.warning(f"O currículo reescrito cita {itens}, que não estão no seu currículo original. "
+                   "Confira e apague nos campos acima o que não for verdade.", icon=":material/fact_check:")
     else:
         st.success("Nenhum número, tecnologia ou contato novo em relação ao seu currículo.",
                    icon=":material/verified:")

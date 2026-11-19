@@ -50,11 +50,11 @@ def test_termos_extras_ignora_os_ja_encontrados():
 
 
 def test_priorizar_habilidades_nao_acrescenta():
-    assert priorizar_habilidades("Excel, Python, SQL", ["SQL", "Python", "Rust"]) == "SQL, Python, Excel"
+    assert priorizar_habilidades("Excel, Python, SQL", ["SQL", "Python", "Rust"], TERMOS) == "SQL, Python, Excel"
 
 
 def test_priorizar_habilidades_vazia():
-    assert priorizar_habilidades("", ["SQL"]) == ""
+    assert priorizar_habilidades("", ["SQL"], TERMOS) == ""
 
 
 def test_dicionario_real_carrega_e_nao_tem_duplicados():

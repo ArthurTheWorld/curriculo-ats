@@ -5,7 +5,7 @@ Não decide nada sozinho: só aponta números, tecnologias e contatos novos para
 import re
 from dataclasses import dataclass
 
-from curriculo_ats.palavras_chave import Termo, extrair_termos
+from curriculo_ats.palavras_chave import Termo, extrair_termos, termos_presentes
 
 
 @dataclass(frozen=True)
@@ -52,7 +52,7 @@ def conferir(original: str, resposta: str, termos: list[Termo]) -> list[Novidade
         if chave not in numeros_originais:
             novidades.append(Novidade("numero", exibido))
 
-    termos_originais = set(extrair_termos(original, termos))
+    termos_originais = termos_presentes(original, termos)  # inclui AWS dentro de "AWS Lambda"
     for nome in extrair_termos(resposta, termos):
         if nome not in termos_originais:
             novidades.append(Novidade("termo", nome))

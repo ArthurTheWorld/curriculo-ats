@@ -130,8 +130,9 @@ Este caminho usa um chat de IA gratuito que você já conhece para melhorar a es
 2. Clique no ícone de copiar no canto do quadro com o prompt.
 3. Clique em um dos botões (ChatGPT, Claude ou Gemini), entre na sua conta gratuita e cole o prompt na conversa.
 4. Copie a resposta inteira do chat e cole no campo **"Cole aqui a resposta do chat"**.
-5. O app lê a resposta e **confere se a IA acrescentou números, tecnologias ou contatos que não estavam no seu currículo**. Se acrescentou, aparece um aviso amarelo listando o quê.
-6. Veja a nova nota de compatibilidade e baixe o arquivo.
+5. O app separa a resposta em seções, em campos que você pode editar (**"Confira e edite o currículo reescrito"**).
+6. O app **confere se a IA acrescentou números, tecnologias ou contatos que não estavam no seu currículo**. Se acrescentou, aparece um aviso amarelo listando o quê. Apague nos campos o que não for verdade: o aviso some quando não sobrar nada inventado.
+7. Veja a nova nota de compatibilidade e baixe o arquivo. O arquivo usa o que estiver nos campos editáveis.
 
 ![O aviso de conferência depois de colar a resposta da IA](docs/imagens/conferencia.jpg)
 

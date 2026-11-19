@@ -15,6 +15,22 @@ def secoes_vazias() -> Secoes:
     return {chave: "" for chave in ORDEM}
 
 
+def somente_contato(secoes: Secoes) -> bool:
+    """A divisão automática falhou? (tudo caiu em 'contato', nenhuma outra seção tem texto)"""
+    return bool(secoes.get("contato")) and not any(secoes.get(c) for c in ORDEM if c != "contato")
+
+
+_CONTROLE = dict.fromkeys(c for c in range(32) if chr(c) not in "\t\n\r")
+
+
+def limpar_controle(texto: str) -> str:
+    """Remove caracteres de controle (comuns em PDFs do Word) que quebram o .docx.
+
+    A tabulação vertical e a quebra de página viram quebra de linha; o resto some.
+    """
+    return texto.replace("\x0b", "\n").replace("\x0c", "\n").translate(_CONTROLE)
+
+
 def normalizar(texto: str) -> str:
     """Minúsculas e sem acentos: 'Gestão' e 'GESTAO' viram 'gestao'."""
     sem_acento = unicodedata.normalize("NFKD", texto)

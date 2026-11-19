@@ -13,9 +13,8 @@ SINONIMOS: dict[str, tuple[str, ...]] = {
     ),
     "habilidades": (
         "habilidades", "competencias", "competencias tecnicas", "habilidades tecnicas",
-        "conhecimentos", "conhecimentos tecnicos", "tecnologias", "ferramentas",
-        "skills", "technical skills", "core competencies", "competencies", "technologies",
-        "tools", "tech stack", "stack",
+        "conhecimentos", "conhecimentos tecnicos", "principais competencias",
+        "skills", "technical skills", "core competencies", "competencies", "top skills",
     ),
     "experiencia": (
         "experiencia", "experiencias", "experiencia profissional", "experiencias profissionais",
@@ -39,13 +38,15 @@ SINONIMOS: dict[str, tuple[str, ...]] = {
     ),
     "idiomas": ("idiomas", "linguas", "languages"),
     "outros": (
-        "outros", "informacoes adicionais", "voluntariado", "trabalho voluntario", "atividades",
+        "outros", "informacoes adicionais", "voluntariado", "trabalho voluntario",
         "atividades extracurriculares", "interesses", "premios", "premiacoes", "publicacoes",
-        "additional information", "volunteering", "volunteer experience", "activities",
+        "additional information", "volunteering", "volunteer experience", "extracurricular activities",
         "interests", "awards", "honors", "honors and awards", "publications", "other",
     ),
 }
 
+# De propósito ausentes: "Atividades", "Tecnologias", "Ferramentas" e "Stack" sozinhos costumam ser
+# subtítulos dentro de um emprego, não seções. Se virassem títulos, partiriam a experiência ao meio.
 _TITULOS = {titulo: chave for chave, titulos in SINONIMOS.items() for titulo in titulos}
 MAX_PALAVRAS_TITULO = 5
 
