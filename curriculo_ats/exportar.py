@@ -5,6 +5,7 @@ Sem tabelas, caixas de texto, imagens, ícones, cabeçalho/rodapé ou cores.
 """
 import io
 import re
+import unicodedata
 
 import docx
 from docx.shared import Cm, Pt
@@ -13,7 +14,9 @@ from fpdf import FPDF
 from curriculo_ats.idioma import TITULOS
 from curriculo_ats.modelos import ORDEM, Secoes, limpar_controle, normalizar
 
-_MARCADOR = re.compile(r"^\s*[-*•]\s+")
+_MARCADOR = re.compile(r"^\s*[-*•●▪◦■➢►○]\s*(?=\S)")
+# Primeira linha que é só o título do documento, não o nome da pessoa.
+_TITULO_DOCUMENTO = {"curriculum vitae", "curriculo", "curriculum", "cv", "resume", "resumo profissional"}
 
 
 def _linhas(texto: str) -> list[str]:
@@ -32,7 +35,10 @@ def _secoes_com_conteudo(secoes: Secoes) -> list[tuple[str, list[str]]]:
 
 
 def _contato(secoes: Secoes) -> list[str]:
-    return _linhas(secoes.get("contato", ""))
+    linhas = _linhas(secoes.get("contato", ""))
+    if linhas and normalizar(linhas[0]).strip(" :") in _TITULO_DOCUMENTO:
+        linhas = linhas[1:]  # "Curriculum Vitae" no topo não é o nome
+    return linhas
 
 
 def _titulo(chave: str, idioma: str) -> str:
@@ -78,14 +84,32 @@ def gerar_docx(secoes: Secoes, idioma: str) -> bytes:
 # --- PDF --------------------------------------------------------------------------
 
 _TROCAS = str.maketrans({
-    "–": "-", "—": "-", "‐": "-", "‑": "-", "“": '"', "”": '"', "„": '"', "‘": "'", "’": "'",
-    "•": "-", "…": "...", "×": "x", "→": "->", " ": " ", "​": "",
+    "–": "-", "—": "-", "‐": "-", "‑": "-",
+    "“": '"', "”": '"', "„": '"', "‘": "'", "’": "'",
+    "•": "-", "●": "-", "▪": "-", "◦": "-", "■": "-", "➢": "-",
+    "►": "-", "○": "-", "": "-",
+    "…": "...", "×": "x", "→": "->", "€": "EUR", "™": "(TM)",
+    " ": " ", "​": "",
+    # Letras sem decomposição Unicode (o NFKD não resolve).
+    "Ł": "L", "ł": "l", "Đ": "D", "đ": "d", "Œ": "OE", "œ": "oe",
+    "ı": "i", "Ħ": "H", "ħ": "h",
 })
 
 
 def _latin1(texto: str) -> str:
-    """As fontes padrão do PDF só têm latin-1: troca o que dá e descarta o resto (ex.: emoji)."""
-    return texto.translate(_TROCAS).encode("latin-1", errors="ignore").decode("latin-1")
+    """As fontes padrão do PDF só têm latin-1.
+
+    Troca símbolos conhecidos, tira o acento de letras de fora (ś → s) e só descarta o que
+    não tem equivalente (ex.: emoji).
+    """
+    saida = []
+    for caractere in texto.translate(_TROCAS):
+        if ord(caractere) < 256:
+            saida.append(caractere)
+        else:
+            base = unicodedata.normalize("NFKD", caractere)
+            saida.append("".join(c for c in base if not unicodedata.combining(c) and ord(c) < 256))
+    return "".join(saida)
 
 
 def gerar_pdf(secoes: Secoes, idioma: str) -> bytes:
@@ -124,8 +148,11 @@ def _slug(texto: str) -> str:
 
 
 def nome_arquivo(secoes: Secoes, empresa: str | None, extensao: str) -> str:
+    """curriculo-<nome>-<empresa ou "vaga">. Sem nome nem empresa: curriculo-ats."""
     contato = _contato(secoes)
-    partes = [_slug(p) for p in (contato[0] if contato else "", empresa or "") if p]
-    partes = [p for p in partes if p]
-    base = "-".join(["curriculo", *partes]) if partes else "curriculo-ats"
-    return f"{base}.{extensao}"
+    nome = _slug(contato[0]) if contato else ""
+    destino = _slug(empresa or "")
+    if not nome and not destino:
+        return f"curriculo-ats.{extensao}"
+    partes = [p for p in (nome, destino or "vaga") if p]
+    return f"{'-'.join(['curriculo', *partes])}.{extensao}"

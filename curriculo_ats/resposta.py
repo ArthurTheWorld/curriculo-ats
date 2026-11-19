@@ -23,6 +23,13 @@ def _limpar(linha: str) -> str:
     return _ENFEITES.sub("", linha).strip()
 
 
+def _parece_contato(linha: str) -> bool:
+    """E-mail, telefone, link ou uma linha curta que não é frase de conversa ("Claro! Aqui está:")."""
+    if "@" in linha or re.search(r"\d{4}", linha) or re.search(r"linkedin|github|https?://", linha, re.I):
+        return True
+    return len(linha.split()) <= 5 and not linha.rstrip().endswith((":", "!", "?", "."))
+
+
 def _chave_do_marcador(nome: str) -> str:
     """'EXPERIENCIA', 'Experiência Profissional', 'EXPERIENCE' → 'experiencia'. Desconhecido → 'outros'."""
     simples = normalizar(nome).strip()
@@ -40,14 +47,24 @@ def ler_resposta(texto: str) -> Secoes:
         raise RespostaInvalida("A resposta está vazia. Cole aqui o texto que o chat devolveu.")
 
     blocos: dict[str, list[str]] = {}
+    preambulo: list[str] = []
     atual: str | None = None
     for linha in linhas:
         achou = _MARCADOR.match(linha)
         if achou:
             atual = _chave_do_marcador(achou.group(1))
             continue
-        if atual and linha:  # texto antes do primeiro marcador ("Claro! Aqui está...") é ignorado
+        if atual and linha:
             blocos.setdefault(atual, []).append(linha)
+        elif linha:
+            preambulo.append(linha)
+
+    # Antes do primeiro marcador costuma vir conversa do chat ("Claro! Aqui está:"), que é
+    # descartada. Mas, se não veio seção de contato, linhas que parecem nome ou contato ficam.
+    if blocos and "contato" not in blocos:
+        contato = [linha for linha in preambulo if _parece_contato(linha)]
+        if contato:
+            blocos["contato"] = contato
 
     if blocos:
         secoes = secoes_vazias()

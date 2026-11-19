@@ -34,10 +34,15 @@ def _sem_contatos(texto: str) -> str:
     return _TELEFONE.sub(" ", _EMAIL.sub(" ", texto))
 
 
+# Mês/ano ("01/2019", "1/19"): só o ano importa; reescrever "Jan 2019" como "01/2019" não é inventar.
+_MES_ANO = re.compile(r"(?<![\d/])(?:0?[1-9]|1[0-2])/(\d{4}|\d{2})(?![\d/])")
+
+
 def _numeros(texto: str) -> dict[str, str]:
     """Forma normalizada → como apareceu. '1.500' e '1500' são o mesmo número."""
     achados: dict[str, str] = {}
-    for m in _NUMERO.finditer(_sem_contatos(texto)):
+    sem_meses = _MES_ANO.sub(lambda m: m.group(1) if len(m.group(1)) == 4 else " ", _sem_contatos(texto))
+    for m in _NUMERO.finditer(sem_meses):
         exibido = m.group().strip().rstrip(".,")
         chave = re.sub(r"[.,\s]", "", exibido)
         achados.setdefault(chave, exibido)

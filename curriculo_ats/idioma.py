@@ -9,6 +9,7 @@ PALAVRAS_FUNCIONAIS: dict[str, frozenset[str]] = {
         "de", "da", "do", "das", "dos", "para", "com", "que", "em", "uma", "um", "no", "na",
         "nos", "nas", "voce", "sera", "sao", "nao", "ou", "pelo", "pela", "como", "seu", "sua",
         "buscamos", "vaga", "requisitos", "experiencia", "conhecimento", "e",
+        "o", "os", "as", "ao", "aos", "na", "no", "num", "numa",
     }),
     "en": frozenset({
         "the", "and", "with", "for", "you", "will", "to", "of", "our", "we", "are", "is", "in",

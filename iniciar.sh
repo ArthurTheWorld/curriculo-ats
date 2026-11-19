@@ -26,7 +26,15 @@ fi
 # 2. Criar o ambiente na primeira vez
 if [ ! -x ".venv/bin/python" ]; then
     echo "Preparando o ambiente pela primeira vez..."
-    "$PY" -m venv .venv
+    if ! "$PY" -m venv .venv; then
+        rm -rf .venv
+        echo
+        echo "  Não consegui criar o ambiente do Python."
+        echo "  No Ubuntu ou Debian, instale o módulo que falta e tente de novo:"
+        echo "      sudo apt install python3-venv"
+        echo
+        exit 1
+    fi
 fi
 
 # 3. Instalar ou atualizar as bibliotecas quando requirements.txt mudar

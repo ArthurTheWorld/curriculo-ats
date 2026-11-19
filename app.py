@@ -32,6 +32,12 @@ def termos():
     return carregar_termos()
 
 
+@st.cache_data(max_entries=32)
+def analise_em_cache(curriculo: str, vaga: str, empresa: str):
+    """A análise roda a cada tecla; com o cache, só quando o texto muda de verdade."""
+    return analisar(curriculo, vaga, termos(), ignorar=[empresa] if empresa else None)
+
+
 def carregar_exemplo() -> None:
     dados = (RAIZ / "exemplos" / "curriculo_exemplo.docx").read_bytes()
     preencher_secoes(st.session_state, extrair_texto("curriculo_exemplo.docx", dados))
@@ -102,7 +108,7 @@ idioma_vaga = detectar_idioma(vaga)
 
 # --- 3. Compatibilidade ---------------------------------------------------------
 st.header("3. Compatibilidade", divider="gray")
-analise = analisar(curriculo, vaga, termos())
+analise = analise_em_cache(curriculo, vaga, st.session_state.get("empresa", ""))
 mostrar_analise(analise, "Compatibilidade com a vaga")
 st.caption("As palavras não encontradas são para você conferir se tem e esqueceu de citar. "
            "Não acrescente o que você não tem.")
@@ -130,7 +136,12 @@ else:
             st.link_button(nome, url, icon=":material/open_in_new:")
     st.warning("Ao colar, o seu currículo é enviado para o serviço de IA que você escolher.",
                icon=":material/privacy_tip:")
+    # O Streamlit apaga o valor de um campo que sai da tela (ao trocar para "sem IA").
+    # Cópias em chaves comuns (*_salvo) devolvem o que a pessoa colou e editou.
+    if "resposta" not in st.session_state and "resposta_salva" in st.session_state:
+        st.session_state["resposta"] = st.session_state["resposta_salva"]
     resposta = st.text_area("**c.** Cole aqui a resposta do chat", key="resposta", height=200)
+    st.session_state["resposta_salva"] = resposta
     if not resposta.strip():
         st.stop()
     try:
@@ -141,16 +152,20 @@ else:
 
     # A resposta preenche campos editáveis (final_*). Só são reescritos quando a resposta
     # colada muda, para não apagar o que a pessoa já corrigiu.
-    faltam_campos = any(f"final_{chave}" not in st.session_state for chave in ORDEM)
-    if st.session_state.get("resposta_lida") != resposta or faltam_campos:
+    if st.session_state.get("resposta_lida") != resposta:
         for chave in ORDEM:
-            st.session_state[f"final_{chave}"] = lida[chave]
+            st.session_state[f"final_{chave}"] = st.session_state[f"final_salvo_{chave}"] = lida[chave]
         st.session_state["resposta_lida"] = resposta
+    for chave in ORDEM:
+        if f"final_{chave}" not in st.session_state:
+            st.session_state[f"final_{chave}"] = st.session_state.get(f"final_salvo_{chave}", lida[chave])
 
     with st.expander("**d.** Confira e edite o currículo reescrito", expanded=True, icon=":material/edit:"):
         for chave in ORDEM:
             st.text_area(ROTULOS[chave], key=f"final_{chave}", height=120 if chave == "experiencia" else 80)
     final = {chave: st.session_state[f"final_{chave}"] for chave in ORDEM}
+    for chave in ORDEM:
+        st.session_state[f"final_salvo_{chave}"] = final[chave]
 
     novidades = conferir(curriculo, como_texto(final), termos())
     if novidades:
@@ -160,7 +175,8 @@ else:
     else:
         st.success("Nenhum número, tecnologia ou contato novo em relação ao seu currículo.",
                    icon=":material/verified:")
-    mostrar_analise(analisar(como_texto(final), vaga, termos()), "Compatibilidade depois da IA", analise.nota)
+    depois = analise_em_cache(como_texto(final), vaga, st.session_state.get("empresa", ""))
+    mostrar_analise(depois, "Compatibilidade depois da IA", analise.nota)
 
 # --- 5. Baixar -----------------------------------------------------------------
 st.header("5. Baixar", divider="gray")

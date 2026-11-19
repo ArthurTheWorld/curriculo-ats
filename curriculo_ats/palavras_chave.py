@@ -83,8 +83,13 @@ def _versoes(texto: str) -> tuple[str, str]:
 
 def _ocorrencias_do_termo(versoes: tuple[str, str], termo: Termo) -> list[tuple[int, int]]:
     minusculo, original = versoes
-    spans = [m.span() for forma in termo.formas() for m in _padrao(forma).finditer(minusculo)]
-    spans += [m.span() for forma in termo.exatos for m in _padrao(forma, True).finditer(original)]
+    spans = []
+    for forma in termo.formas():
+        if _sem_acento(forma).lower() in minusculo:  # busca simples antes da regex: quase sempre "não"
+            spans += [m.span() for m in _padrao(forma).finditer(minusculo)]
+    for forma in termo.exatos:
+        if _sem_acento(forma) in original:
+            spans += [m.span() for m in _padrao(forma, True).finditer(original)]
     return spans
 
 
@@ -108,12 +113,15 @@ def extrair_termos(texto: str, termos: list[Termo]) -> list[str]:
     versoes = _versoes(texto)
     achados = [(ini, fim, t.nome) for t in termos for ini, fim in _ocorrencias_do_termo(versoes, t)]
 
-    # Maiores primeiro; descarta o que fica dentro de um trecho já aceito.
-    achados.sort(key=lambda a: (-(a[1] - a[0]), a[0]))
+    # Por início e, no mesmo início, o maior primeiro: um trecho está dentro de outro já
+    # aceito exatamente quando termina antes do maior fim visto até ali.
+    achados.sort(key=lambda a: (a[0], -(a[1] - a[0])))
     aceitos: list[tuple[int, int, str]] = []
+    maior_fim = -1
     for ini, fim, nome in achados:
-        if not any(a_ini <= ini and fim <= a_fim for a_ini, a_fim, _ in aceitos):
+        if fim > maior_fim:
             aceitos.append((ini, fim, nome))
+            maior_fim = fim
 
     nomes: list[str] = []
     for _ini, _fim, nome in sorted(aceitos):
@@ -135,21 +143,49 @@ def _inicio_de_frase(texto: str, posicao: int) -> bool:
     return not anterior or anterior[-1] in ".!?:;\n•-–—"
 
 
-def termos_extras(vaga: str, ja_encontrados: list[str]) -> list[str]:
+# Palavras com maiúscula comuns em vagas que não são habilidades (lugares, benefícios, contrato).
+_NAO_SAO_HABILIDADES = frozenset({
+    "brasil", "brazil", "paulo", "rio", "janeiro", "horizonte", "curitiba", "recife", "salvador",
+    "fortaleza", "porto", "alegre", "brasilia", "campinas", "florianopolis", "vale", "auxilio",
+    "plano", "gympass", "wellhub", "clt", "pj", "remoto", "remote", "hibrido", "hybrid",
+    "presencial", "segunda", "sexta", "sabado", "domingo", "ltda", "s.a", "inc",
+})
+
+
+def _parte_de_nome_proprio(tokens: list[re.Match], indice: int) -> bool:
+    """'São Paulo', 'Vale Refeição': duas palavras com maiúscula lado a lado são nome, não habilidade."""
+    def maiuscula(i: int) -> bool:
+        if not 0 <= i < len(tokens):
+            return False
+        token = tokens[i].group()
+        return token[0].isupper() and token.isalpha() and normalizar(token) not in _FUNCIONAIS
+
+    def colados(a: int, b: int) -> bool:
+        return 0 <= a < b < len(tokens) and tokens[a].end() + 1 == tokens[b].start()
+
+    return (maiuscula(indice - 1) and colados(indice - 1, indice)) or \
+           (maiuscula(indice + 1) and colados(indice, indice + 1))
+
+
+def termos_extras(vaga: str, ja_encontrados: list[str], ignorar: list[str] | None = None) -> list[str]:
     """Termos técnicos que a vaga repete (≥ 2 vezes) e o dicionário não conhece.
 
-    Ex.: uma ferramenta nova citada duas vezes. Palavras no começo de frase sozinhas
-    não contam, porque toda frase começa com maiúscula.
+    Ex.: uma ferramenta nova citada duas vezes. Não contam: palavras no começo de frase
+    (toda frase começa com maiúscula), nomes de lugar e de benefício ("São Paulo",
+    "Vale Refeição") e o que vier em `ignorar` (ex.: o nome da empresa).
     """
     conhecidos = {normalizar(n) for n in ja_encontrados}
+    conhecidos |= {normalizar(p) for nome in ignorar or [] for p in nome.split()}
     contagem: dict[str, int] = {}
     fora_do_inicio: set[str] = set()
     grafia: dict[str, str] = {}
 
-    for m in _TOKEN.finditer(vaga):
+    tokens = list(_TOKEN.finditer(vaga))
+    for indice, m in enumerate(tokens):
         token = m.group()
         chave = normalizar(token)
-        if len(token) < 2 or not _parece_tecnico(token) or chave in _FUNCIONAIS or chave in conhecidos:
+        if (len(token) < 2 or not _parece_tecnico(token) or chave in _FUNCIONAIS or chave in conhecidos
+                or chave in _NAO_SAO_HABILIDADES or _parte_de_nome_proprio(tokens, indice)):
             continue
         contagem[chave] = contagem.get(chave, 0) + 1
         grafia.setdefault(chave, token)
@@ -159,10 +195,12 @@ def termos_extras(vaga: str, ja_encontrados: list[str]) -> list[str]:
     return [grafia[c] for c in contagem if contagem[c] >= 2 and c in fora_do_inicio]
 
 
-def analisar(curriculo: str, vaga: str, termos: list[Termo]) -> Analise:
+def analisar(curriculo: str, vaga: str, termos: list[Termo], ignorar: list[str] | None = None) -> Analise:
+    """`ignorar`: palavras que a vaga repete mas não são habilidade (ex.: o nome da empresa)."""
     da_vaga = extrair_termos(vaga, termos)
     # Extras que já são forma de um termo do dicionário (ex.: "Spark") seriam duplicados.
-    da_vaga += [extra for extra in termos_extras(vaga, da_vaga) if not extrair_termos(extra, termos)]
+    extras = termos_extras(vaga, da_vaga, ignorar)
+    da_vaga += [extra for extra in extras if not extrair_termos(extra, termos)]
     no_curriculo = termos_presentes(curriculo, termos)
 
     do_dicionario = {t.nome for t in termos}
